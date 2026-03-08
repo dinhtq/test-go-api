@@ -82,7 +82,7 @@ func setupRouter() *gin.Engine {
 
 	// CORS configuration
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173", "https://508e-2603-8000-6e00-2100-849d-b97c-5c65-d1db.ngrok-free.app"},
+		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173", "https://jerri-azeotropic-bertha.ngrok-free.dev"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
