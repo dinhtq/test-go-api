@@ -42,8 +42,9 @@ make build
 
 ## API Documentation
 
-The API includes built-in Swagger UI for exploration and testing.
+The API includes built-in Swagger UI and a health check endpoint for exploration and testing.
 
+- **Health Check**: [http://localhost:8080/ping](http://localhost:8080/ping) (Returns `{"message": "pong"}`)
 - **Swagger UI**: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
 - **Swagger JSON**: `docs/swagger.json`
 
