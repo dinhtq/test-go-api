@@ -188,6 +188,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "title": {
                     "type": "string"
                 },
