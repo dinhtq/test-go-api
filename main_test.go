@@ -54,3 +54,17 @@ func TestCreateTodo(t *testing.T) {
 	json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Equal(t, "Test Todo", response.Title)
 }
+
+func TestPing(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/ping", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response map[string]string
+	json.Unmarshal(w.Body.Bytes(), &response)
+	assert.Equal(t, "pong", response["message"])
+}
