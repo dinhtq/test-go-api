@@ -23,10 +23,10 @@ import (
 var db *gorm.DB
 
 // @title           Todo List API
-// @version         1.0
+// @version         1.0.0
 // @description     A simple todo list API in Golang using Gin and GORM.
 // @host            localhost:8080
-// @BasePath        /api/v1
+// @BasePath        /
 
 func main() {
 	var err error
@@ -94,6 +94,7 @@ func setupRouter() *gin.Engine {
 
 	v1 := r.Group("/api/v1")
 	{
+		v1.GET("/ping", pingV1)
 		todos := v1.Group("/todos")
 		{
 			todos.GET("", getTodos)
@@ -109,6 +110,21 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
+// pingV1 godoc
+// @ID           PingV1
+// @Summary      V1 Health check
+// @Description  v1 health check
+// @Tags         health
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]string
+// @Router       /api/v1/ping [get]
+func pingV1(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "pong from v1",
+	})
+}
+
 // getTodos godoc
 // @ID           ListTodos
 // @Summary      List todos
@@ -117,7 +133,7 @@ func setupRouter() *gin.Engine {
 // @Accept       json
 // @Produce      json
 // @Success      200  {array}   models.Todo
-// @Router       /todos [get]
+// @Router       /api/v1/todos [get]
 func getTodos(c *gin.Context) {
 	var todos []models.Todo
 	db.Find(&todos)
@@ -134,7 +150,7 @@ func getTodos(c *gin.Context) {
 // @Param        todo  body      models.CreateTodoInput  true  "Todo object"
 // @Success      201  {object}  models.Todo
 // @Failure      400  {object}  models.APIError
-// @Router       /todos [post]
+// @Router       /api/v1/todos [post]
 func createTodo(c *gin.Context) {
 	var input models.CreateTodoInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -159,7 +175,7 @@ func createTodo(c *gin.Context) {
 // @Param        id   path      int  true  "Todo ID"
 // @Success      200  {object}  models.Todo
 // @Failure      404  {object}  models.APIError
-// @Router       /todos/{id} [get]
+// @Router       /api/v1/todos/{id} [get]
 func getTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {
@@ -181,7 +197,7 @@ func getTodo(c *gin.Context) {
 // @Success      200   {object}  models.Todo
 // @Failure      400   {object}  models.APIError
 // @Failure      404   {object}  models.APIError
-// @Router       /todos/{id} [put]
+// @Router       /api/v1/todos/{id} [put]
 func updateTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {
@@ -209,7 +225,7 @@ func updateTodo(c *gin.Context) {
 // @Param        id   path      int  true  "Todo ID"
 // @Success      204  "No Content"
 // @Failure      404  {object}  models.APIError
-// @Router       /todos/{id} [delete]
+// @Router       /api/v1/todos/{id} [delete]
 func deleteTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {

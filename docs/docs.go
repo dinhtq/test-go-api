@@ -15,7 +15,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/todos": {
+        "/api/v1/ping": {
+            "get": {
+                "description": "v1 health check",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "V1 Health check",
+                "operationId": "PingV1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/todos": {
             "get": {
                 "description": "get todos",
                 "consumes": [
@@ -81,7 +108,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/todos/{id}": {
+        "/api/v1/todos/{id}": {
             "get": {
                 "description": "get a todo item by ID",
                 "consumes": [
@@ -309,9 +336,9 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "1.0.0",
 	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Todo List API",
 	Description:      "A simple todo list API in Golang using Gin and GORM.",

@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /
 definitions:
   models.APIError:
     description: API error response
@@ -76,9 +76,27 @@ info:
   contact: {}
   description: A simple todo list API in Golang using Gin and GORM.
   title: Todo List API
-  version: "1.0"
+  version: 1.0.0
 paths:
-  /todos:
+  /api/v1/ping:
+    get:
+      consumes:
+      - application/json
+      description: v1 health check
+      operationId: PingV1
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: V1 Health check
+      tags:
+      - health
+  /api/v1/todos:
     get:
       consumes:
       - application/json
@@ -122,7 +140,7 @@ paths:
       summary: Create a todo
       tags:
       - todos
-  /todos/{id}:
+  /api/v1/todos/{id}:
     delete:
       consumes:
       - application/json

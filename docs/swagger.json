@@ -4,12 +4,39 @@
         "description": "A simple todo list API in Golang using Gin and GORM.",
         "title": "Todo List API",
         "contact": {},
-        "version": "1.0"
+        "version": "1.0.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api/v1",
+    "basePath": "/",
     "paths": {
-        "/todos": {
+        "/api/v1/ping": {
+            "get": {
+                "description": "v1 health check",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "V1 Health check",
+                "operationId": "PingV1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/todos": {
             "get": {
                 "description": "get todos",
                 "consumes": [
@@ -75,7 +102,7 @@
                 }
             }
         },
-        "/todos/{id}": {
+        "/api/v1/todos/{id}": {
             "get": {
                 "description": "get a todo item by ID",
                 "consumes": [
