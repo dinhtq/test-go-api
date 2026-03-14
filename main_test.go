@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/user/todo-api/models"
@@ -40,7 +41,10 @@ func TestGetTodos(t *testing.T) {
 func TestCreateTodo(t *testing.T) {
 	router := setupRouter()
 
-	todo := models.Todo{Title: "Test Todo"}
+	todo := models.CreateTodoInput{
+		Title:   "Test Todo",
+		DueDate: time.Now(),
+	}
 	jsonValue, _ := json.Marshal(todo)
 
 	w := httptest.NewRecorder()

@@ -160,6 +160,7 @@ func createTodo(c *gin.Context) {
 	todo := models.Todo{
 		Title:    input.Title,
 		Priority: input.Priority,
+		DueDate:  input.DueDate,
 	}
 	db.Create(&todo)
 	c.JSON(http.StatusCreated, todo)
@@ -211,7 +212,19 @@ func updateTodo(c *gin.Context) {
 		return
 	}
 
-	db.Model(&todo).Updates(input)
+	// Update fields if provided
+	if input.Title != "" {
+		todo.Title = input.Title
+	}
+	if input.Priority != 0 {
+		todo.Priority = input.Priority
+	}
+	todo.Completed = input.Completed
+	if input.DueDate != nil {
+		todo.DueDate = *input.DueDate
+	}
+
+	db.Save(&todo)
 	c.JSON(http.StatusOK, todo)
 }
 

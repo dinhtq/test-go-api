@@ -249,9 +249,14 @@ const docTemplate = `{
             "description": "Input for creating a todo item",
             "type": "object",
             "required": [
+                "due_date",
                 "title"
             ],
             "properties": {
+                "due_date": {
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
                 "priority": {
                     "type": "integer",
                     "enum": [
@@ -280,6 +285,10 @@ const docTemplate = `{
                     "example": false
                 },
                 "created_at": {
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                },
+                "due_date": {
                     "type": "string",
                     "example": "2023-01-01T00:00:00Z"
                 },
@@ -314,6 +323,10 @@ const docTemplate = `{
                 "completed": {
                     "type": "boolean",
                     "example": true
+                },
+                "due_date": {
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
                 },
                 "priority": {
                     "type": "integer",

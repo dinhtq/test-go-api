@@ -10,6 +10,9 @@ definitions:
   models.CreateTodoInput:
     description: Input for creating a todo item
     properties:
+      due_date:
+        example: "2023-01-01T00:00:00Z"
+        type: string
       priority:
         enum:
         - 0
@@ -22,6 +25,7 @@ definitions:
         example: Buy milk
         type: string
     required:
+    - due_date
     - title
     type: object
   models.Todo:
@@ -31,6 +35,9 @@ definitions:
         example: false
         type: boolean
       created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      due_date:
         example: "2023-01-01T00:00:00Z"
         type: string
       id:
@@ -59,6 +66,9 @@ definitions:
       completed:
         example: true
         type: boolean
+      due_date:
+        example: "2023-01-01T00:00:00Z"
+        type: string
       priority:
         enum:
         - 0
