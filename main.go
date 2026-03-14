@@ -41,6 +41,21 @@ func main() {
 		log.Fatal("failed to migrate database")
 	}
 
+	// Seed mock data if database is empty
+	var count int64
+	db.Model(&models.Todo{}).Count(&count)
+	if count == 0 {
+		mockTodos := []models.Todo{
+			{Title: "Learn Go", Priority: 3, DueDate: time.Now().Add(24 * time.Hour)},
+			{Title: "Build an API", Priority: 2, DueDate: time.Now().Add(48 * time.Hour)},
+			{Title: "Write Tests", Priority: 1, DueDate: time.Now().Add(72 * time.Hour)},
+		}
+		for _, todo := range mockTodos {
+			db.Create(&todo)
+		}
+		log.Println("Mock data seeded successfully")
+	}
+
 	r := setupRouter()
 
 	srv := &http.Server{
