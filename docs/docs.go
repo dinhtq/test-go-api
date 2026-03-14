@@ -28,6 +28,7 @@ const docTemplate = `{
                     "todos"
                 ],
                 "summary": "List todos",
+                "operationId": "ListTodos",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -52,6 +53,7 @@ const docTemplate = `{
                     "todos"
                 ],
                 "summary": "Create a todo",
+                "operationId": "CreateTodo",
                 "parameters": [
                     {
                         "description": "Todo object",
@@ -59,7 +61,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Todo"
+                            "$ref": "#/definitions/models.CreateTodoInput"
                         }
                     }
                 ],
@@ -68,6 +70,12 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.Todo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
                         }
                     }
                 }
@@ -86,6 +94,7 @@ const docTemplate = `{
                     "todos"
                 ],
                 "summary": "Get a todo",
+                "operationId": "GetTodoByID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -100,6 +109,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Todo"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
                         }
                     }
                 }
@@ -116,6 +131,7 @@ const docTemplate = `{
                     "todos"
                 ],
                 "summary": "Update a todo",
+                "operationId": "UpdateTodo",
                 "parameters": [
                     {
                         "type": "integer",
@@ -130,7 +146,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Todo"
+                            "$ref": "#/definitions/models.UpdateTodoInput"
                         }
                     }
                 ],
@@ -139,6 +155,18 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Todo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
                         }
                     }
                 }
@@ -155,6 +183,7 @@ const docTemplate = `{
                     "todos"
                 ],
                 "summary": "Delete a todo",
+                "operationId": "DeleteTodo",
                 "parameters": [
                     {
                         "type": "integer",
@@ -167,35 +196,111 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIError"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "models.APIError": {
+            "description": "API error response",
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Internal server error"
+                }
+            }
+        },
+        "models.CreateTodoInput": {
+            "description": "Input for creating a todo item",
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "priority": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ],
+                    "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Buy milk"
+                }
+            }
+        },
         "models.Todo": {
+            "description": "Todo item model",
             "type": "object",
             "required": [
                 "title"
             ],
             "properties": {
                 "completed": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "priority": {
-                    "type": "integer"
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ],
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Buy milk"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2023-01-01T00:00:00Z"
+                }
+            }
+        },
+        "models.UpdateTodoInput": {
+            "description": "Input for updating a todo item",
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "priority": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ],
+                    "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Buy milk"
                 }
             }
         }

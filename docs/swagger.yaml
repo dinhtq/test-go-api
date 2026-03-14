@@ -1,21 +1,75 @@
 basePath: /api/v1
 definitions:
-  models.Todo:
+  models.APIError:
+    description: API error response
     properties:
-      completed:
-        type: boolean
-      created_at:
+      error:
+        example: Internal server error
         type: string
-      id:
-        type: integer
+    type: object
+  models.CreateTodoInput:
+    description: Input for creating a todo item
+    properties:
       priority:
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        example: 1
         type: integer
       title:
-        type: string
-      updated_at:
+        example: Buy milk
         type: string
     required:
     - title
+    type: object
+  models.Todo:
+    description: Todo item model
+    properties:
+      completed:
+        example: false
+        type: boolean
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      priority:
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        example: 1
+        type: integer
+      title:
+        example: Buy milk
+        type: string
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    required:
+    - title
+    type: object
+  models.UpdateTodoInput:
+    description: Input for updating a todo item
+    properties:
+      completed:
+        example: true
+        type: boolean
+      priority:
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        example: 1
+        type: integer
+      title:
+        example: Buy milk
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -29,6 +83,7 @@ paths:
       consumes:
       - application/json
       description: get todos
+      operationId: ListTodos
       produces:
       - application/json
       responses:
@@ -45,13 +100,14 @@ paths:
       consumes:
       - application/json
       description: create a new todo item
+      operationId: CreateTodo
       parameters:
       - description: Todo object
         in: body
         name: todo
         required: true
         schema:
-          $ref: '#/definitions/models.Todo'
+          $ref: '#/definitions/models.CreateTodoInput'
       produces:
       - application/json
       responses:
@@ -59,6 +115,10 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
       summary: Create a todo
       tags:
       - todos
@@ -67,6 +127,7 @@ paths:
       consumes:
       - application/json
       description: delete a todo item by ID
+      operationId: DeleteTodo
       parameters:
       - description: Todo ID
         in: path
@@ -78,6 +139,10 @@ paths:
       responses:
         "204":
           description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
       summary: Delete a todo
       tags:
       - todos
@@ -85,6 +150,7 @@ paths:
       consumes:
       - application/json
       description: get a todo item by ID
+      operationId: GetTodoByID
       parameters:
       - description: Todo ID
         in: path
@@ -98,6 +164,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Todo'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
       summary: Get a todo
       tags:
       - todos
@@ -105,6 +175,7 @@ paths:
       consumes:
       - application/json
       description: update an existing todo item
+      operationId: UpdateTodo
       parameters:
       - description: Todo ID
         in: path
@@ -116,7 +187,7 @@ paths:
         name: todo
         required: true
         schema:
-          $ref: '#/definitions/models.Todo'
+          $ref: '#/definitions/models.UpdateTodoInput'
       produces:
       - application/json
       responses:
@@ -124,6 +195,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Todo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIError'
       summary: Update a todo
       tags:
       - todos

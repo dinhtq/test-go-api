@@ -59,15 +59,10 @@ func main() {
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
-	// kill (no param) default send syscall.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall.SIGKILL but can't be caught, so no need to add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutting down server...")
 
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
@@ -109,13 +104,13 @@ func setupRouter() *gin.Engine {
 		}
 	}
 
-	// Swagger documentation
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }
 
 // getTodos godoc
+// @ID           ListTodos
 // @Summary      List todos
 // @Description  get todos
 // @Tags         todos
@@ -130,25 +125,32 @@ func getTodos(c *gin.Context) {
 }
 
 // createTodo godoc
+// @ID           CreateTodo
 // @Summary      Create a todo
 // @Description  create a new todo item
 // @Tags         todos
 // @Accept       json
 // @Produce      json
-// @Param        todo  body      models.Todo  true  "Todo object"
+// @Param        todo  body      models.CreateTodoInput  true  "Todo object"
 // @Success      201  {object}  models.Todo
+// @Failure      400  {object}  models.APIError
 // @Router       /todos [post]
 func createTodo(c *gin.Context) {
-	var todo models.Todo
-	if err := c.ShouldBindJSON(&todo); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var input models.CreateTodoInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.APIError{Error: err.Error()})
 		return
+	}
+	todo := models.Todo{
+		Title:    input.Title,
+		Priority: input.Priority,
 	}
 	db.Create(&todo)
 	c.JSON(http.StatusCreated, todo)
 }
 
 // getTodo godoc
+// @ID           GetTodoByID
 // @Summary      Get a todo
 // @Description  get a todo item by ID
 // @Tags         todos
@@ -156,36 +158,40 @@ func createTodo(c *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "Todo ID"
 // @Success      200  {object}  models.Todo
+// @Failure      404  {object}  models.APIError
 // @Router       /todos/{id} [get]
 func getTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		c.JSON(http.StatusNotFound, models.APIError{Error: "Todo not found"})
 		return
 	}
 	c.JSON(http.StatusOK, todo)
 }
 
 // updateTodo godoc
+// @ID           UpdateTodo
 // @Summary      Update a todo
 // @Description  update an existing todo item
 // @Tags         todos
 // @Accept       json
 // @Produce      json
 // @Param        id    path      int          true  "Todo ID"
-// @Param        todo  body      models.Todo  true  "Updated todo object"
+// @Param        todo  body      models.UpdateTodoInput  true  "Updated todo object"
 // @Success      200   {object}  models.Todo
+// @Failure      400   {object}  models.APIError
+// @Failure      404   {object}  models.APIError
 // @Router       /todos/{id} [put]
 func updateTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		c.JSON(http.StatusNotFound, models.APIError{Error: "Todo not found"})
 		return
 	}
 
-	var input models.Todo
+	var input models.UpdateTodoInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.APIError{Error: err.Error()})
 		return
 	}
 
@@ -194,6 +200,7 @@ func updateTodo(c *gin.Context) {
 }
 
 // deleteTodo godoc
+// @ID           DeleteTodo
 // @Summary      Delete a todo
 // @Description  delete a todo item by ID
 // @Tags         todos
@@ -201,11 +208,12 @@ func updateTodo(c *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "Todo ID"
 // @Success      204  "No Content"
+// @Failure      404  {object}  models.APIError
 // @Router       /todos/{id} [delete]
 func deleteTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := db.First(&todo, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		c.JSON(http.StatusNotFound, models.APIError{Error: "Todo not found"})
 		return
 	}
 	db.Delete(&todo)
