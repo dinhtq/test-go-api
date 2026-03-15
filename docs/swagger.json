@@ -4,7 +4,7 @@
         "description": "A simple todo list API in Golang using Gin and GORM.",
         "title": "Todo List API",
         "contact": {},
-        "version": "1.0.0"
+        "version": "1.1.0"
     },
     "host": "localhost:8080",
     "basePath": "/",

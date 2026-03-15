@@ -23,7 +23,7 @@ import (
 var db *gorm.DB
 
 // @title           Todo List API
-// @version         1.0.0
+// @version         1.1.0
 // @description     A simple todo list API in Golang using Gin and GORM.
 // @host            localhost:8080
 // @BasePath        /
