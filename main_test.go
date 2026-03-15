@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +12,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/user/todo-api/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -26,6 +29,42 @@ func TestMain(m *testing.M) {
 	db.AutoMigrate(&models.Todo{})
 
 	os.Exit(m.Run())
+}
+
+func TestSwaggerVersionAndSchemaSync(t *testing.T) {
+	// Read the generated swagger.json
+	data, err := os.ReadFile("docs/swagger.json")
+	require.NoError(t, err, "swagger.json should exist. Run 'make swag-init' if it's missing.")
+
+	var swagger struct {
+		Info struct {
+			Version string `json:"version"`
+		} `json:"info"`
+		Definitions json.RawMessage `json:"definitions"`
+	}
+
+	err = json.Unmarshal(data, &swagger)
+	require.NoError(t, err)
+
+	// Current expected version after adding due_date
+	expectedVersion := "1.1.0"
+
+	// 1. Check if the version is updated in main.go/docs
+	assert.Equal(t, expectedVersion, swagger.Info.Version, "The API version should be %s", expectedVersion)
+
+	// 2. Hash the definitions to detect any schema changes
+	hash := sha256.New()
+	hash.Write(swagger.Definitions)
+	definitionsHash := hex.EncodeToString(hash.Sum(nil))
+
+	// This is the hash of the 'definitions' at version 1.1.0
+	// If you change the models, this hash will change, forcing you to
+	// acknowledge the change by updating it here AND incrementing the version.
+	expectedHash := "6fb6e2c8118955c8a12f17e02291df6051cdc1e1c28f2a192da0225d7f7cea91"
+
+	if definitionsHash != expectedHash {
+		t.Errorf("Schema (definitions) has changed but expected hash remains %s.\nNew hash: %s\n\nIf you've updated the schema, you MUST:\n1. Increment @version in main.go\n2. Run 'make swag-init'\n3. Update expectedVersion and expectedHash in main_test.go", expectedHash, definitionsHash)
+	}
 }
 
 func TestGetTodos(t *testing.T) {
